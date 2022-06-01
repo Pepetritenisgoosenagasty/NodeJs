@@ -1,7 +1,8 @@
 const express = require('express');
-const {signup, signin, generateRefreshToken, userMe, logout, getAllUsers, getUserId, updateUserMe, changePassword, passwordResetEmail, userAvatar, verifyPasswordReset, resetPassword} = require('../controller/user')
+const {signup, signin, generateRefreshToken, userMe, logout, getAllUsers, getUserId, updateUserMe, changePassword, passwordResetEmail, userAvatar, verifyPasswordReset, resetPassword, verifyEmailLink} = require('../controller/user')
 const multer = require('multer');
 const auth = require('../middleware/auth');
+const checkVerifiedEmail = require('../middleware/checkVerifiedEmail');
 const router = new express.Router();
 
 const upload = multer({
@@ -22,7 +23,7 @@ const upload = multer({
 router.post('/auth/signup', signup)
 
 //@route POST /api/auth/signin
-router.post('/auth/signin', signin);
+router.post('/auth/signin', checkVerifiedEmail, signin);
 
 //@route POST /api/auth/upload
 router.post('/user/avatar', auth, upload.single('upload'), userAvatar);
@@ -56,6 +57,10 @@ router.get('/verifyLink/:id/:token',  verifyPasswordReset)
 
 //@route POST /api/auth/password reset 
 router.post('/passwordreset/:id/:token',  resetPassword)
+
+//@route POST /api/auth/verify-email-link
+router.get('/verify-email', verifyEmailLink)
+
 
 
 module.exports = router;

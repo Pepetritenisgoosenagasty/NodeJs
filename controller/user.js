@@ -3,12 +3,14 @@ const auth = require('../middleware/auth')
 const sharp = require('sharp')
 const bcrypt = require('bcryptjs')
 const Token = require('../model/Token')
-const { sendUrlMail } = require('../email/sendUrlMail')
+const { sendResetPasswordMail, verifyMail } = require('../email/sendUrlMail')
 const { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } = process.env;
 const generateTokens = require('../utils/generateTokens')
 const verifyRefreshToken = require('../utils/verifyRefreshToken')
 const jwt = require('jsonwebtoken');
 const Avatar = require('../model/Avatar')
+const cookie = require('cookie-parser')
+const crypto = require('crypto')
 
 
 
@@ -21,12 +23,27 @@ const signup = async (req, res, next) => {
     if (user) {
       return res.status(400).json({ error: 'email already exist.' })
     } else {
-        user = await new User(req.body).save()
-      return res.status(201).json({ user, message: 'user registered successfully'})
+      user = await new User(req.body);
+      user.emailToken = crypto.randomBytes(64).toString('hex');
+      user.isVerified = false; 
+
+      await user.save();
+
+        // Email Content 
+       const name = user.firstName + ' ' + user.lastName;
+       const email = user.email;
+       const url = req.headers.host;
+       const token = user.emailToken
+
+      
+
+        // Send Email
+        verifyMail({name, email, url, token})
+      return res.status(201).json({ error: false, message: 'user registered successfully, Kindly verify your email !!'})
     }
   } catch (error) {
     console.error(error)
-    return res.status(500).json({ error: 'Internal Server Error!' })
+    return res.status(500).json({ error: error.message })
   }
 }
 
@@ -44,7 +61,9 @@ const signin =  async (req, res) => {
       if (valid) {
         //generate a pair of tokens if valid and send
         const { accessToken, refreshToken } = await generateTokens(user)
-        return res.status(201).json({ error: false, accessToken, refreshToken, message: "Login Successful" });
+        res.cookie('accessToken', accessToken);
+        res.cookie('refreshToken', refreshToken);
+        return res.status(201).json({ error: false, message: "Login Successful" });
       } else {
         //send error if password is invalid
         return res.status(401).json({ error: "Invalid password!" });
@@ -80,6 +99,27 @@ return res.status(400).json({message: "File is required"})
 }
 
 
+// verify-email link
+const verifyEmailLink =  async (req, res) => {
+  try {
+    const token = req.query.token
+    const user = await User.findOne({emailToken: token})
+
+    if(user) {
+      user.emailToken = null;
+      user.isVerified = true;
+
+      await user.save();
+      return res.status(200).json({message: "Email verified!"})
+    } else {
+      return res.status(400).json({error: true, message: "Email not verified!"})
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error!" });
+  }
+}
+
+
 // Send password reset email
 const passwordResetEmail = async (req, res) => {
   try {
@@ -97,7 +137,7 @@ const passwordResetEmail = async (req, res) => {
     }
 
     const url = `${process.env.BASE_URL}password-reset/${user._id}/${token.token}`;
-    await sendUrlMail(user.email, "Password Reset", url);
+    await sendResetPasswordMail(user.email, "Password Reset", url);
 
     res.status(200).json({message: 'Password Reset Link Sent successfully'})
   } catch (error) {
@@ -265,22 +305,28 @@ const getUserId = async (req, res) => {
 // Logout
 const logout = async (req, res) => {
   try {
-    const { refreshToken } = req.body;
+    // const { refreshToken } = req.body;
 
-    if (!refreshToken) {
-      return res.status(401).json({message: 'Invalid link'})
-    } else {
-      const token = await Token.findOne({token: refreshToken})
+    // const { refreshToken } = req.cookies['accessToken'];
+    
+    // if (!refreshToken) {
+    //   return res.status(401).json({message: 'Invalid link'})
+    // } else {
+    //   const token = await Token.findOne({token: refreshToken})
 
-      if(!token)
-     return res.status(400).json({ error: true, message: 'Invalid token'})
+    //   if(!token)
+    //  return res.status(400).json({ error: true, message: 'Invalid token'})
 
-     await token.remove()
+    //  await token.remove()
+    //  res.cookie('accessToken', "", { maxAge: 1 })
+    //  res.status(200).json({ message: 'Logout Successfully' });
+    // }
+     res.cookie('accessToken', "", { maxAge: 1 })
      res.status(200).json({ message: 'Logout Successfully' });
-    }
+
   } catch (error) {
     return res.status(500).json({message:"Internal Server Error!"})
   }
 }
 
-module.exports = { signup, signin, generateRefreshToken, userMe, logout, getAllUsers, getUserId, updateUserMe, changePassword, passwordResetEmail, resetPassword, userAvatar, verifyPasswordReset }
+module.exports = { signup, signin, generateRefreshToken, userMe, logout, getAllUsers, getUserId, updateUserMe, changePassword, passwordResetEmail, resetPassword, userAvatar, verifyPasswordReset, verifyEmailLink }

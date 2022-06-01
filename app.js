@@ -6,6 +6,7 @@ const cors = require('cors');
 const userRoutes = require("./routes/user");
 const swaggerUi = require("swagger-ui-express")
 const swaggerDocument = require("./swagger.json");
+const cookieParser = require('cookie-parser')
 
 // Connecting to MongoDB
 mongoose.connect(`mongodb+srv://admin:${process.env.MONGOOSE_PASSWORD}@cluster0.3qw8w.mongodb.net/${process.env.MONGOOSE_DB_NAME}?retryWrites=true&w=majority`)
@@ -19,6 +20,7 @@ const app = express();
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: false }));
 app.use(cors());
+app.use(cookieParser())
 
 const port = process.env.PORT || 4000;
 

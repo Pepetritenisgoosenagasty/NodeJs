@@ -32,6 +32,13 @@ const userSchema = new mongoose.Schema(
         }
       },
     },
+    emailToken: {
+      type: String, 
+    },
+    isVerified: {
+      type: Boolean,
+
+    },
     password: {
       type: String,
       required: true,
@@ -46,6 +53,7 @@ const userSchema = new mongoose.Schema(
     avatar: {
       type: Buffer,
     },
+
     roles: {
       type: [String],
       enum: ['admin', 'user', 'super_admin'],

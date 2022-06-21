@@ -23,7 +23,8 @@ const upload = multer({
 router.post('/auth/signup', signup)
 
 //@route POST /api/auth/signin
-router.post('/auth/signin', checkVerifiedEmail, signin);
+// router.post('/auth/signin', checkVerifiedEmail, signin);
+router.post('/auth/signin', signin);
 
 //@route POST /api/auth/upload
 router.post('/user/avatar', auth, upload.single('upload'), userAvatar);

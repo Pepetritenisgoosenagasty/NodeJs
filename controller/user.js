@@ -61,9 +61,9 @@ const signin =  async (req, res) => {
       if (valid) {
         //generate a pair of tokens if valid and send
         const { accessToken, refreshToken } = await generateTokens(user)
-        res.cookie('accessToken', accessToken);
-        res.cookie('refreshToken', refreshToken);
-        return res.status(201).json({ error: false, message: "Login Successful" });
+        // res.cookie('accessToken', accessToken);
+        // res.cookie('refreshToken', refreshToken);
+        return res.status(201).json({ error: false, accessToken, refreshToken, message: "Login Successful" });
       } else {
         //send error if password is invalid
         return res.status(401).json({ error: "Invalid password!" });

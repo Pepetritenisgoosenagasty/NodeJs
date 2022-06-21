@@ -9,8 +9,8 @@ const cookie = require('cookie-parser')
 //middleware function to check if the incoming request in authenticated:
 const auth = async (req, res, next) => {
  try {
-      //  const token = req.header('Authorization').replace('Bearer ', '');
-      const token = req.cookies['accessToken'];
+       const token = req.header('Authorization').replace('Bearer ', '');
+      // const token = req.cookies['accessToken'];
       
       if (!token) {
         return res.status(403).json({error: true, message:"Access denied, no token found"});

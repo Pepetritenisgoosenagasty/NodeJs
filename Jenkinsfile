@@ -1,6 +1,9 @@
 pipeline {
     agent any
 
+    parameters {
+        booleanParam(name: 'executeDeploy', defaultValue: false, description: '')
+    }
 
       stages {
           stage('build') {
@@ -21,6 +24,11 @@ pipeline {
           }
 
           stage('deploy') {
+             when {
+                expression {
+                    params.executeDeploy
+                }
+             }
               steps {
                  echo 'deploying the software'
                 // withCredentials([sshUserPrivateKey(credentialsId: "jenkins-ssh", keyFileVariable: 'sshkey')]){

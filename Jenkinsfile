@@ -40,9 +40,6 @@ pipeline {
                 
 
                   rsync -avz --exclude  '.git' --delete -e "ssh -i $sshkey" ./ root@164.92.218.220:/apps/
-                 
-
-                  ssh -i $sshkey root@164.92.218.220 "sudo systemctl restart nodeapp"
                   '''
               }
           }

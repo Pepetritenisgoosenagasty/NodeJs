@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     parameters {
-        booleanParam(name: executeDeploy, default: false, description: '')
+        booleanParam(name: executeDeploy, defaultValue: false, description: '')
     }
 
       stages {

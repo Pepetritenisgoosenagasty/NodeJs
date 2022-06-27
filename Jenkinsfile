@@ -36,7 +36,7 @@ pipeline {
                     usernamePassword(credentials: 'server-credentials', usernameVarible: USER, passwordVarible: PWD)
                  ]) {
                     sh '''#!/bin/bash
-                  echo "Creating .ssh"
+                  echo "rsync the old apps folder"
                 
                   rsync -avz --exclude  '.git' --delete -e "ssh -i $sshkey" ./ root@164.92.218.220:/apps/
                   '''

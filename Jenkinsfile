@@ -41,7 +41,7 @@ pipeline {
                         ssh-keyscan 164.92.218.220 >> /var/lib/jenkins/.ssh/known_hosts
                         echo "Keyscan done successfully"
                         
-                        rsync -avz --exclude  '.git' --delete -e "ssh -i $sshkey" ./ root@164.92.218.220::/apps/
+                        rsync -avzh --exclude  '.git' --delete -e "ssh -i $sshkey" ./ root@164.92.218.220::/apps/
                          echo "app rsync done successfully"
                         '''
                  }

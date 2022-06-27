@@ -31,9 +31,11 @@ pipeline {
              }
               steps {
                  echo 'deploying the software'
-
-                 withCredentials([sshUserPrivateKey(credentialsId: "jenkins-ssh", keyFileVariable: 'sshkey')]) {
-                    sh '''#!/bin/bash
+                 withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'jenkins-ssh', \
+                                             keyFileVariable: 'sshkey', \
+                                             passphraseVariable: '', \
+                                             usernameVariable: '')]) {
+                        sh '''#!/bin/bash
                         echo "rsync the old apps folder"
                         echo "Creating .ssh"
                         mkdir -p /var/lib/jenkins/.ssh
@@ -44,7 +46,7 @@ pipeline {
                         rsync -avz --exclude  '.git' --delete -e "ssh -i ${sshkey}" ./  root@164.92.218.220:/root/apps/
                          echo "app rsync done successfully"
                         '''
-                 }
+}
           }
       }
     }

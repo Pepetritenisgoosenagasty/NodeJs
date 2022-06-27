@@ -36,7 +36,7 @@ pipeline {
                     sh '''#!/bin/bash
                         echo "rsync the old apps folder"
                         
-                        rsync -avz --exclude  '.git' --delete -e "ssh -i $sshkey" ./ root@164.92.218.220:/apps/
+                        rsync -avz --exclude  '.git' ./ root@164.92.218.220:/apps/
                         '''
                  }
           }

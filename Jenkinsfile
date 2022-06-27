@@ -31,17 +31,16 @@ pipeline {
              }
               steps {
                  echo 'deploying the software'
-                withCredentials([sshUserPrivateKey(credentialsId: "jenkins-ssh", keyFileVariable: 'sshkey')]){
-                  echo 'deploying the software'
-                  sh '''#!/bin/bash
-                  echo "Creating .ssh"
-                  mkdir -p /var/lib/jenkins/.ssh
-                  ssh-keyscan 164.92.218.220 >> /var/lib/jenkins/.ssh/known_hosts
-                
 
+                 withCredentials([
+                    usernamePassword(credentials: 'server-credentials', usernameVarible: USER, passwordVarible: PWD)
+                 ]) {
+                    sh '''#!/bin/bash
+                  echo "Creating .ssh"
+                
                   rsync -avz --exclude  '.git' --delete -e "ssh -i $sshkey" ./ root@164.92.218.220:/apps/
                   '''
-              }
+                 }
           }
       }
     }

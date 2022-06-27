@@ -35,6 +35,9 @@ pipeline {
                  withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId:'github-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
                     sh '''#!/bin/bash
                         echo "rsync the old apps folder"
+                         echo "Creating .ssh"
+                        mkdir -p /var/lib/jenkins/.ssh
+                        ssh-keyscan 164.92.218.220 >> /var/lib/jenkins/.ssh/known_hosts
                         
                         rsync -avz --exclude  '.git' ./ root@164.92.218.220:/apps/
                         '''

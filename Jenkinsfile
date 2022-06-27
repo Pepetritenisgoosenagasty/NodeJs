@@ -32,7 +32,7 @@ pipeline {
               steps {
                  echo 'deploying the software'
 
-                 withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId:'github-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+                 withCredentials([sshUserPrivateKey(credentialsId: "jenkins-ssh", keyFileVariable: 'sshkey')]) {
                     sh '''#!/bin/bash
                         echo "rsync the old apps folder"
                         echo "Creating .ssh"
@@ -41,7 +41,7 @@ pipeline {
                         ssh-keyscan 164.92.218.220 >> /var/lib/jenkins/.ssh/known_hosts
                         echo "Keyscan done successfully"
                         
-                        rsync -avz --exclude  '.git'  root@164.92.218.220:/root/apps/
+                        rsync -avz --exclude  '.git' --delete -e "ssh -i $sshkey" ./  root@164.92.218.220:/root/apps/
                          echo "app rsync done successfully"
                         '''
                  }

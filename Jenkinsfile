@@ -32,14 +32,12 @@ pipeline {
               steps {
                  echo 'deploying the software'
 
-                 withCredentials([
-                    usernamePassword(credentials: 'github-credentials')
-                 ]) {
+                 withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId:'github-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
                     sh '''#!/bin/bash
-                  echo "rsync the old apps folder"
-                
-                  rsync -avz --exclude  '.git' --delete -e "ssh -i $sshkey" ./ root@164.92.218.220:/apps/
-                  '''
+                        echo "rsync the old apps folder"
+                        
+                        rsync -avz --exclude  '.git' --delete -e "ssh -i $sshkey" ./ root@164.92.218.220:/apps/
+                        '''
                  }
           }
       }

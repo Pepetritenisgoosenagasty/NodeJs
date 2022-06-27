@@ -33,7 +33,7 @@ pipeline {
                  echo 'deploying the software'
 
                  withCredentials([
-                    usernamePassword(credentials: 'github-credentials', usernameVarible: USER, passwordVarible: PWD)
+                    usernamePassword(credentials: 'github-credentials')
                  ]) {
                     sh '''#!/bin/bash
                   echo "rsync the old apps folder"

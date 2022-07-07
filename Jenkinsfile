@@ -29,24 +29,27 @@ pipeline {
                     params.executeDeploy
                 }
              }
+             
+          stage('deploy') {
               steps {
-                 echo 'deploying the software'
-                 withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'jenkins-ssh', \
-                                             keyFileVariable: 'sshkey', \
-                                             passphraseVariable: '', \
-                                             usernameVariable: '')]) {
-                        sh '''#!/bin/bash
-                        echo "rsync the old apps folder"
-                        echo "Creating .ssh"
-                        mkdir -p /var/lib/jenkins/.ssh
-                        echo "directory created"
-                        ssh-keyscan 164.92.218.220 >> /var/lib/jenkins/.ssh/known_hosts
-                        echo "Keyscan done successfully"
-                        echo "${sshkey}"
-                        rsync -avz --exclude  '.git' --delete -e "ssh -i ${sshkey}" ./  root@164.92.218.220:/root/apps/
-                         echo "app rsync done successfully"
-                        '''
-}
+                withCredentials([sshUserPrivateKey(credentialsId: "jenkins-ssh", keyFileVariable: 'sshkey')]){
+                  echo 'deploying the software'
+                  sh '''#!/bin/bash
+                  echo "Creating .ssh"
+                  mkdir -p /var/lib/jenkins/.ssh
+                  ssh-keyscan 192.168.56.11 >> /var/lib/jenkins/.ssh/known_hosts
+                  ssh-keyscan 192.168.56.12 >> /var/lib/jenkins/.ssh/known_hosts
+
+                  rsync -avz --exclude  '.git' --delete -e "ssh -i $sshkey" ./ vagrant@192.168.56.11:/app/
+                  rsync -avz --exclude  '.git' --delete -e "ssh -i $sshkey" ./ vagrant@192.168.56.12:/app/
+
+                  ssh -i $sshkey vagrant@192.168.56.11 "cd /app/user-auth-with-nodejs"
+                  ssh -i $sshkey vagrant@192.168.56.11 "pm2 start app.js"
+                  ssh -i $sshkey vagrant@192.168.56.12 "cd /app/user-auth-with-nodejs"
+                  ssh -i $sshkey vagrant@192.168.56.12 "pm2 start app.js"
+
+                  '''
+              }
           }
       }
     }

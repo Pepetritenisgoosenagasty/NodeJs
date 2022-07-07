@@ -21,6 +21,7 @@ pipeline {
                   echo 'deploying the software'
                   sh '''#!/bin/bash
                   echo "Creating .ssh"
+                  echo "${sshkey}"
                   mkdir -p /var/lib/jenkins/.ssh
                   sudo -i
                   ssh-keyscan 192.168.56.11 >> /var/lib/jenkins/.ssh/known_hosts

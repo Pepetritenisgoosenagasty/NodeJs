@@ -1,37 +1,23 @@
 pipeline {
     agent any
 
-    parameters {
-        booleanParam(name: 'executeDeploy', defaultValue: false, description: '')
-    }
-
       stages {
           stage('build') {
               steps {
                   echo 'building the software'
-                  echo 'executing yarn...'
-                  nodejs('Node-18.4.0') {
-                      sh 'yarn install'
-                }
-                 
+                  sh 'npm install'
               }
           }
           stage('test') {
               steps {
                   echo 'testing the software'
-                //   sh 'npm test'
+                 
               }
           }
-            
-             
+
           stage('deploy') {
-             when {
-                expression {
-                    params.executeDeploy
-                }
-             }
               steps {
-                withCredentials([sshUserPrivateKey(credentialsId: "jenkins-ssh", keyFileVariable: 'sshkey')]){
+                     withCredentials([sshUserPrivateKey(credentialsId: "jenkins-ssh", keyFileVariable: 'sshkey')]){
                   echo 'deploying the software'
                   sh '''#!/bin/bash
                   echo "Creating .ssh"
@@ -53,3 +39,6 @@ pipeline {
       }
     }
 }
+
+
+

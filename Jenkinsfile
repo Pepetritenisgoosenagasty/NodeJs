@@ -27,8 +27,9 @@ pipeline {
                    sudo -i
                   ssh-keyscan 192.168.56.12 >> /var/lib/jenkins/.ssh/known_hosts
                   
-                  
+                  sudo -i
                   rsync -avz --exclude  '.git' --delete -e "ssh -i $sshkey" ./ vagrant@192.168.56.11:/app/
+                  sudo -i
                   rsync -avz --exclude  '.git' --delete -e "ssh -i $sshkey" ./ vagrant@192.168.56.12:/app/
 
                    $sshkey vagrant@192.168.56.11 "cd /app/user-auth-with-nodejs"

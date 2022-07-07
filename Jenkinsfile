@@ -21,17 +21,17 @@ pipeline {
                   echo 'deploying the software'
                   sh '''#!/bin/bash
                   echo "Creating .ssh"
-                  mkdir -p /var/lib/jenkins/.ssh
-                  ssh-keyscan 192.168.56.11 >> /var/lib/jenkins/.ssh/known_hosts
-                  ssh-keyscan 192.168.56.12 >> /var/lib/jenkins/.ssh/known_hosts
+                 sudo mkdir -p /var/lib/jenkins/.ssh
+                 sudo ssh-keyscan 192.168.56.11 >> /var/lib/jenkins/.ssh/known_hosts
+                 sudo ssh-keyscan 192.168.56.12 >> /var/lib/jenkins/.ssh/known_hosts
 
-                  rsync -avz --exclude  '.git' --delete -e "ssh -i $sshkey" ./ vagrant@192.168.56.11:/app/
-                  rsync -avz --exclude  '.git' --delete -e "ssh -i $sshkey" ./ vagrant@192.168.56.12:/app/
+                sudo  rsync -avz --exclude  '.git' --delete -e "ssh -i $sshkey" ./ vagrant@192.168.56.11:/app/
+                sudo  rsync -avz --exclude  '.git' --delete -e "ssh -i $sshkey" ./ vagrant@192.168.56.12:/app/
 
-                  ssh -i $sshkey vagrant@192.168.56.11 "cd /app/user-auth-with-nodejs"
-                  ssh -i $sshkey vagrant@192.168.56.11 "pm2 start app.js"
-                  ssh -i $sshkey vagrant@192.168.56.12 "cd /app/user-auth-with-nodejs"
-                  ssh -i $sshkey vagrant@192.168.56.12 "pm2 start app.js"
+                 sudo ssh -i $sshkey vagrant@192.168.56.11 "cd /app/user-auth-with-nodejs"
+                sudo  ssh -i $sshkey vagrant@192.168.56.11 "pm2 start app.js"
+                sudo  ssh -i $sshkey vagrant@192.168.56.12 "cd /app/user-auth-with-nodejs"
+                sudo  ssh -i $sshkey vagrant@192.168.56.12 "pm2 start app.js"
 
                   '''
               }

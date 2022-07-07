@@ -22,15 +22,14 @@ pipeline {
                 //   sh 'npm test'
               }
           }
-
+            
+             
           stage('deploy') {
              when {
                 expression {
                     params.executeDeploy
                 }
              }
-             
-          stage('deploy') {
               steps {
                 withCredentials([sshUserPrivateKey(credentialsId: "jenkins-ssh", keyFileVariable: 'sshkey')]){
                   echo 'deploying the software'

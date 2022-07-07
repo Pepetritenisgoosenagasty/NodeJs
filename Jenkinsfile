@@ -24,6 +24,7 @@ pipeline {
                   mkdir -p /var/lib/jenkins/.ssh
                   sudo -i
                   ssh-keyscan 192.168.56.11 >> /var/lib/jenkins/.ssh/known_hosts
+                   sudo -i
                   ssh-keyscan 192.168.56.12 >> /var/lib/jenkins/.ssh/known_hosts
                   
                   
